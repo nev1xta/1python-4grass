@@ -1,0 +1,19 @@
+/* #0b1e33	(11,30,51)
+#013c58	(1,60,88)
+#00537a	(0,83,122)
+#f5a201	(245,162,1)
+#ffba42	(255,186,66)
+  */
+#main-wrapper{
+    background-color: #ffffff;
+    background-image: url("../images/bgLogin0.png");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover ;
+    filter: saturate(1.3);
+}
+
+#box-form{
+  background-color: #ffffff;
+  box-shadow: 0.5em 0.5em 1.3em#0b1e33;
+}

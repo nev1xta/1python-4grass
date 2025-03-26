@@ -1,0 +1,18 @@
+{% load static %}
+<html>
+    <head>
+        <link rel="stylesheet" href="{% static 'app/styles.css' %}" />
+        <link rel="stylesheet" href="{% static 'app/file.css' %}" />
+    </head>
+    <body>
+        <h1>This is your profile</h1>
+
+        <h4>
+            {% for file in files %}
+            <a href="{% url 'app:detail_file' file.id %}">
+            {{file}} {{file.type}} <br/>
+            </a>
+            {% endfor %}
+        </h4>
+    </body>
+</html>
