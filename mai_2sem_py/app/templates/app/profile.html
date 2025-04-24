@@ -1,18 +1,93 @@
 {% load static %}
-<html>
-    <head>
-        <link rel="stylesheet" href="{% static 'app/styles.css' %}" />
-        <link rel="stylesheet" href="{% static 'app/file.css' %}" />
-    </head>
-    <body>
-        <h1>This is your profile</h1>
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Профиль</title>
+  <link rel="shortcut icon" type="image/png" href="../../static/images/avatar.png" />
+  <link rel="stylesheet" href="{% static 'app/styles.css' %}" />
+  <link rel="stylesheet" href="{% static 'app/file.css' %}" />
+  <style>
+    .profile-avatar {
+      max-width: 180px;
+      border: 3px solid #013c58;
+    }
 
-        <h4>
-            {% for file in files %}
-            <a href="{% url 'app:detail_file' file.id %}">
-            {{file}} {{file.type}} <br/>
-            </a>
-            {% endfor %}
-        </h4>
-    </body>
+    .file-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .card-long {
+      min-height: 800px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6"
+    data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed">
+
+    <div class="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-10 col-lg-11">
+            <div class="card p-5 card-long" id="box-form">
+              <div class="row h-100">
+                <div class="col-md-3 text-center border-end d-flex flex-column align-items-center justify-content-center">
+                  <img src="images/avatar.png" alt="Аватар" class="rounded-circle img-fluid mb-3 profile-avatar">
+                  <h4 class="fw-bold">{{ user.username }}</h4>
+                </div>
+
+                <div class="col-md-9 d-flex flex-column">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0">Ваши файлы</h5>
+                    <form action="{% url 'logout' %}?next=/profile" method="post">
+                      {% csrf_token %}
+                    <button class="btn btn-warning text-white">Выйти</button>
+                  </form>
+                  </div>
+
+                  <div class="file-list">
+                    <ul class="list-group">
+                      
+                        {% for file in this_user_files %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                          {{ file.file.name }} 
+                          <form action="{{file.id}}/" method="post">
+                          {% csrf_token %}
+                          <button name="addUser_button" class="badge bg-primary rounded-pill">Назначить</button>
+
+                          </form>
+                        </li>
+                        {% endfor %}
+                        <!-- <button class="badge bg-primary rounded-pill">Скачать</button> -->
+                      <!-- <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Изображение.jpg
+                        <button class="badge bg-primary rounded-pill">Скачать</button>
+                      </li> -->
+                    </ul>
+                  </div>
+
+
+                  <div class="col-md-9 d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                      <form action="" method="post" enctype="multipart/form-data" >
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <!-- <input name="file_upload" type="file" multiple></input> -->
+                        <button class="btn btn-warning text-white" type="submit" name="UploadFiles_button">Отправить файл</button>
+                      </form>
+
+                  </div>
+
+                </div>
+              </div> 
+            </div> 
+          </div> 
+        </div> 
+      </div>
+    </div>
+  </div>
+</body>
 </html>

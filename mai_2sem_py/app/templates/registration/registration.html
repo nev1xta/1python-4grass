@@ -1,4 +1,5 @@
 {% load static %}
+{{ form }}
 <!doctype html>
 <html lang="ru">
 
@@ -6,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Registration</title>
-  <link rel="shortcut icon" type="image/png" href="images/logo0.png" />
+  <link rel="shortcut icon" type="image/png" href="../../static/images/logo0.png" />
   <link rel="stylesheet" href="{% static 'app/styles.css' %}" />
   <link rel="stylesheet" href="{% static 'app/file.css' %}" />
 </head>
@@ -25,7 +26,8 @@
                 <div class="mb-4">
                   <h1 class="text-center">PaperClipped</h1>
                 </div>
-                <form>
+                <form method="post">
+                  {% csrf_token %}
                   <div class="mb-4">
                     <label for="InputUsername1" class="form-label">Имя пользователя</label>
                     <input type="text" class="form-control" id="InputUsername1" aria-describedby="emailHelp" name="username" placeholder="Введите ваше имя пользователя">
@@ -36,16 +38,16 @@
                   </div>
                   <div class="mb-4">
                     <label for="InputPassword1" class="form-label">Пароль</label>
-                    <input type="password" class="form-control" id="InputPassword1" name="password" placeholder="Введите пароль">
+                    <input type="password" class="form-control" id="InputPassword1" name="password1" placeholder="Введите пароль">
                     </div>
                   <div class="mb-4">
-                    <input type="password" class="form-control" id="InputRepeatPassword1" name="repeatPassword" placeholder="Повторите пароль">
+                    <input type="password" class="form-control" id="InputRepeatPassword1" name="password2" placeholder="Повторите пароль">
                   </div>
                  
                   <button  type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2" >Регистрация</button>
                   <div class="d-flex align-items-center justify-content-center">
                     <p class="fs-4 mb-0 fw-bold">У вас уже есть аккаунт?</p>
-                    <a class="text-primary fw-bold ms-2" href="index.html">Войти</a>
+                    <a class="text-primary fw-bold ms-2" href="{% url 'login' %}">Войти</a>
                   </div>
                 </form>
               </div>
