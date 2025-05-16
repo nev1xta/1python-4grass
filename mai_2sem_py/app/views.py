@@ -3,8 +3,10 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic.edit import CreateView, FormView
 from django.contrib.auth.forms import UserCreationForm
-from .models import Files, UploadFiles
+from .models import UploadFiles
+from django.db import models
 from .forms import RegisterForm, UploadFileForm, NewPrivilegedUser
+from django.contrib.auth import get_user_model
 
 # from .forms import NewUserForm
 from django.contrib.auth.decorators import login_required
@@ -24,13 +26,15 @@ class register(FormView):
     
 def profile_files(request, file_id):
     file = UploadFiles.objects.get(id=file_id)
+    User = get_user_model()
     if request.method == "POST":
         form = NewPrivilegedUser(request.POST)
         if "addUserbutton" in request.POST:
             if form.is_valid():
                 cd = form.cleaned_data
                 
-                file.authorized_users[request.POST["user"]] = int(cd["role"])
+                users = User.objects.get(username=request.POST["user"])
+                file.authorized_users[int(users.id)] = int(cd["role"])
                 file.save()
             return HttpResponseRedirect(reverse("app:profile"))
     else:
