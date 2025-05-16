@@ -21,20 +21,16 @@ class register(FormView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
-
-# def handle_uploded_file(f):
-#     with open(f"uploads/{f.name}", "wb+") as destination:
-#         for chunk in f.chunks():
-#             destination.write(chunk)
     
-
 def profile_files(request, file_id):
     file = UploadFiles.objects.get(id=file_id)
     if request.method == "POST":
         form = NewPrivilegedUser(request.POST)
         if "addUserbutton" in request.POST:
             if form.is_valid():
-                file.authorized_users[request.POST["user"]] = 1
+                cd = form.cleaned_data
+                
+                file.authorized_users[request.POST["user"]] = int(cd["role"])
                 file.save()
             return HttpResponseRedirect(reverse("app:profile"))
     else:
@@ -69,11 +65,11 @@ def profile(request):
     for file in all_files:
         for key in file.authorized_users.keys():
             if str(request.user.id) == key:
-                if file.authorized_users[str(request.user.id)] == 1:
+                if file.authorized_users[str(request.user.id)] == 1 or file.authorized_users[str(request.user.id)] == 2:
                     this_user_files.append(file)
 
     context = {
-        'all_files': all_files,
+        # 'all_files': all_files,
         'form': form,
         'this_user_files' : this_user_files,
 

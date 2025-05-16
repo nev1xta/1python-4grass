@@ -55,6 +55,7 @@
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                           {{ file.file.name }} 
                           <form action="{{file.id}}/" method="post">
+                            <h>{{ file.authorized_users }}</h>
                           {% csrf_token %}
                           <button name="addUser_button" class="badge bg-primary rounded-pill">Назначить</button>
 

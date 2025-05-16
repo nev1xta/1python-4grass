@@ -20,6 +20,16 @@ class RegisterForm(UserCreationForm):
 
 class NewPrivilegedUser(forms.Form):
     user = forms.IntegerField 
+    # role = forms.RadioSelect
+
+    CHOICES = [
+        ('1', 'editor'),
+        ('2', 'reader'),
+    ]
+    role = forms.ChoiceField(
+        widget=forms.RadioSelect,
+        choices=CHOICES, required=False
+    )
 
 class UploadFileForm(forms.Form):
     file = forms.FileField(label="Файл")

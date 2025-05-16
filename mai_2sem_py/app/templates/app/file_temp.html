@@ -41,7 +41,15 @@
                     {% csrf_token %}
                     <div class="mb-4">
                         <input type="text" class="form-control" id="inputUsername" name="user" placeholder="Введите ваше имя пользователя">
-                      </div>
+                      </div>  
+                    </br>
+                    <div name="role">
+                      {% for choice in form.role %}
+                      
+                      <span class="radio">{{ choice.tag }}</span>
+                      {{ choice.choice_label }}</br>
+                    {% endfor %}
+                    </div> 
                       <!-- <div class="mb-4">
                         <input type="password" class="form-control" id="pwd" name="password"  placeholder="Введите пароль">
                       </div> -->
