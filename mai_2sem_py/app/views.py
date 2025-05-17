@@ -33,6 +33,16 @@ class register(FormView):
 def profile_files(request, file_id):
     file = UploadFiles.objects.get(id=file_id)
     User = get_user_model()
+    users_with_file = []
+    for user in map(int, file.authorized_users.keys()):
+        users_with_file.append(User.objects.get(id=user))
+
+    non_signatories = []
+    for user in users_with_file:
+        if file.authorized_users[str(user.id)] == 1:
+            non_signatories.append(user)
+    # print(users_with_file)
+
     if request.method == "POST":
         form = NewPrivilegedUser(request.POST)
         if "addUserbutton" in request.POST:
@@ -47,6 +57,9 @@ def profile_files(request, file_id):
                     users = User.objects.get(username=request.POST["user"])
                     file.authorized_users[int(users.id)] = int(cd["role"])
                     file.save()
+        if "sign" in request.POST:
+            file.authorized_users[int(request.user.id)] = 2
+            file.save()
         if "comeback" in request.POST:
             return HttpResponseRedirect(reverse("app:profile"))
     else:
@@ -54,7 +67,9 @@ def profile_files(request, file_id):
 
     contex = {
         "file" : file,
-        "form" : form
+        "form" : form,
+        "users" : users_with_file,
+        "non_signatories" : non_signatories,
     }
     return render(request, "app/file_temp.html", context=contex)
 
@@ -69,7 +84,7 @@ def profile(request):
         if "UploadFiles_button" in request.POST:
             if form.is_valid():
                 authorized_users_data = {
-                    request.user.id: 1
+                    request.user.id: 2
                 }
 
                 fp = UploadFiles(file=form.cleaned_data['file'], father_user=request.user.id, authorized_users=authorized_users_data)

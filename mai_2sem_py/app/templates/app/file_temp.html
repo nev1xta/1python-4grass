@@ -46,15 +46,26 @@
                   </div>
                  
                 <div>
+                  <h2>скачать файл</h2>
                   <a href="{{ file.file.url }}" download="{{ file.file.url }}">{{ file.file.name }}</a>
                 </div>
+
                 </div>
                 <div class="col-md-9 d-flex flex-column">
                   <h4 class="fw-bold">{{ file.file.name }}</h4>
                   <form action="" method="post">
                     {% csrf_token %}
+                    <div>
+                    <h4>Пользователи с доступом к файлу:</h4>
+                    {% for user_iter in users %}
+                    <h5>-{{ user_iter.username }}</h5>
+                  {% endfor %}
+                  <h5>---------------------------------</h5>
+
+                </div>
+                {% if user.id == file.father_user %}
                     <div class="mb-4">
-                        <input type="text" class="form-control" id="inputUsername" name="user" placeholder="Введите ваше имя пользователя">
+                        <input type="text" class="form-control" id="inputUsername" name="user" placeholder="Введите имя пользователя">
                         {% if messages %}
                         <ul class="messages">
                             {% for message in messages %}
@@ -71,10 +82,14 @@
                       {{ choice.choice_label }}</br>
                     {% endfor %}
                     </div> 
-                      <!-- <div class="mb-4">
-                        <input type="password" class="form-control" id="pwd" name="password"  placeholder="Введите пароль">
-                      </div> -->
+
                     <button name="addUserbutton" type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2" >добавить</button>
+                {% endif %}
+                {% for user_iter in non_signatories %}
+                  {% if user_iter.id == user.id %}
+                  <button name="sign" type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2" >подписать</button>
+                  {% endif %}
+                {% endfor %}
                 </form>
                 </div>
                 </div>

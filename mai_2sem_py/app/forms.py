@@ -23,8 +23,8 @@ class NewPrivilegedUser(forms.Form):
     # role = forms.RadioSelect
 
     CHOICES = [
-        ('1', 'editor'),
-        ('2', 'reader'),
+        ('1', 'на подпись'),
+        ('2', 'читатель'),
     ]
     role = forms.ChoiceField(
         widget=forms.RadioSelect,
