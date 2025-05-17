@@ -11,6 +11,8 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, FileResponse
 import os
+from django.contrib import messages
+
 
 # from .forms import NewUserForm
 from django.contrib.auth.decorators import login_required
@@ -35,11 +37,16 @@ def profile_files(request, file_id):
         form = NewPrivilegedUser(request.POST)
         if "addUserbutton" in request.POST:
             if form.is_valid():
-                cd = form.cleaned_data
-                
-                users = User.objects.get(username=request.POST["user"])
-                file.authorized_users[int(users.id)] = int(cd["role"])
-                file.save()
+                if not (form.cleaned_data["role"]):
+                    messages.success(request, 'роль пользователя не выбрана')
+                elif not (User.objects.filter(username=request.POST["user"]).exists()):
+                    messages.success(request, 'пользователь не существует')
+                else:
+                    cd = form.cleaned_data
+                    
+                    users = User.objects.get(username=request.POST["user"])
+                    file.authorized_users[int(users.id)] = int(cd["role"])
+                    file.save()
         if "comeback" in request.POST:
             return HttpResponseRedirect(reverse("app:profile"))
     else:
@@ -61,11 +68,10 @@ def profile(request):
         form = UploadFileForm(request.POST, request.FILES)
         if "UploadFiles_button" in request.POST:
             if form.is_valid():
-                print(request.POST)
-                # handle_uploded_file(form.cleaned_data['file'])
                 authorized_users_data = {
                     request.user.id: 1
                 }
+
                 fp = UploadFiles(file=form.cleaned_data['file'], father_user=request.user.id, authorized_users=authorized_users_data)
                 fp.save()
             return HttpResponseRedirect(reverse("app:profile"))

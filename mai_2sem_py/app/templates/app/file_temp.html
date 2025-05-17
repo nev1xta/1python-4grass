@@ -35,10 +35,8 @@
             <div class="card p-5 card-long" id="box-form">
               <div class="row h-100">
 
-                <div>
-                  <a href="{{ file.file.url }}" download="{{ file.file.url }}">{{ file.file.name }}</a>
-                </div>
 
+                
                 <div class="col-md-3 text-center border-end d-flex flex-column align-items-center justify-content-center">
                   <div>
                     <form action="" method="post">
@@ -46,11 +44,24 @@
                     <button name="comeback" type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2" >назад</button>
                     </form>
                   </div>
+                 
+                <div>
+                  <a href="{{ file.file.url }}" download="{{ file.file.url }}">{{ file.file.name }}</a>
+                </div>
+                </div>
+                <div class="col-md-9 d-flex flex-column">
                   <h4 class="fw-bold">{{ file.file.name }}</h4>
                   <form action="" method="post">
                     {% csrf_token %}
                     <div class="mb-4">
                         <input type="text" class="form-control" id="inputUsername" name="user" placeholder="Введите ваше имя пользователя">
+                        {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
                       </div>  
                     </br>
                     <div name="role">
@@ -65,9 +76,9 @@
                       </div> -->
                     <button name="addUserbutton" type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2" >добавить</button>
                 </form>
+                </div>
+                </div>
 
-                </div>
-                </div>
               </div> 
             </div> 
           </div> 
