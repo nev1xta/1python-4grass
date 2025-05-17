@@ -4,9 +4,13 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic.edit import CreateView, FormView
 from django.contrib.auth.forms import UserCreationForm
 from .models import UploadFiles
+from django.conf import settings
 from django.db import models
 from .forms import RegisterForm, UploadFileForm, NewPrivilegedUser
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse, FileResponse
+import os
 
 # from .forms import NewUserForm
 from django.contrib.auth.decorators import login_required
@@ -46,6 +50,7 @@ def profile_files(request, file_id):
         "form" : form
     }
     return render(request, "app/file_temp.html", context=contex)
+
 
 @login_required
 def profile(request):
