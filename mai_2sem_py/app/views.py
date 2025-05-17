@@ -36,6 +36,7 @@ def profile_files(request, file_id):
                 users = User.objects.get(username=request.POST["user"])
                 file.authorized_users[int(users.id)] = int(cd["role"])
                 file.save()
+        if "comeback" in request.POST:
             return HttpResponseRedirect(reverse("app:profile"))
     else:
         form = NewPrivilegedUser()

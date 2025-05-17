@@ -35,7 +35,12 @@
             <div class="card p-5 card-long" id="box-form">
               <div class="row h-100">
                 <div class="col-md-3 text-center border-end d-flex flex-column align-items-center justify-content-center">
-                 
+                  <div>
+                    <form action="" method="post">
+                      {% csrf_token %}
+                    <button name="comeback" type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2" >назад</button>
+                    </form>
+                  </div>
                   <h4 class="fw-bold">{{ file.file.name }}</h4>
                   <form action="" method="post">
                     {% csrf_token %}
@@ -55,6 +60,7 @@
                       </div> -->
                     <button name="addUserbutton" type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2" >добавить</button>
                 </form>
+
                 </div>
                 </div>
               </div> 
