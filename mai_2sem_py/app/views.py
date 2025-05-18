@@ -3,8 +3,16 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic.edit import CreateView, FormView
 from django.contrib.auth.forms import UserCreationForm
-from .models import Files, UploadFiles
+from .models import UploadFiles
+from django.conf import settings
+from django.db import models
 from .forms import RegisterForm, UploadFileForm, NewPrivilegedUser
+from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse, FileResponse
+import os
+from django.contrib import messages
+
 
 # from .forms import NewUserForm
 from django.contrib.auth.decorators import login_required
@@ -21,30 +29,50 @@ class register(FormView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
-
-# def handle_uploded_file(f):
-#     with open(f"uploads/{f.name}", "wb+") as destination:
-#         for chunk in f.chunks():
-#             destination.write(chunk)
     
-
 def profile_files(request, file_id):
     file = UploadFiles.objects.get(id=file_id)
+    User = get_user_model()
+    users_with_file = []
+    for user in map(int, file.authorized_users.keys()):
+        users_with_file.append(User.objects.get(id=user))
+
+    non_signatories = []
+    for user in users_with_file:
+        if file.authorized_users[str(user.id)] == 1:
+            non_signatories.append(user)
+    # print(users_with_file)
+
     if request.method == "POST":
         form = NewPrivilegedUser(request.POST)
         if "addUserbutton" in request.POST:
             if form.is_valid():
-                file.authorized_users[request.POST["user"]] = 1
-                file.save()
+                if not (form.cleaned_data["role"]):
+                    messages.success(request, 'роль пользователя не выбрана')
+                elif not (User.objects.filter(username=request.POST["user"]).exists()):
+                    messages.success(request, 'пользователь не существует')
+                else:
+                    cd = form.cleaned_data
+                    
+                    users = User.objects.get(username=request.POST["user"])
+                    file.authorized_users[int(users.id)] = int(cd["role"])
+                    file.save()
+        if "sign" in request.POST:
+            file.authorized_users[int(request.user.id)] = 2
+            file.save()
+        if "comeback" in request.POST:
             return HttpResponseRedirect(reverse("app:profile"))
     else:
         form = NewPrivilegedUser()
 
     contex = {
         "file" : file,
-        "form" : form
+        "form" : form,
+        "users" : users_with_file,
+        "non_signatories" : non_signatories,
     }
     return render(request, "app/file_temp.html", context=contex)
+
 
 @login_required
 def profile(request):
@@ -55,11 +83,10 @@ def profile(request):
         form = UploadFileForm(request.POST, request.FILES)
         if "UploadFiles_button" in request.POST:
             if form.is_valid():
-                print(request.POST)
-                # handle_uploded_file(form.cleaned_data['file'])
                 authorized_users_data = {
-                    request.user.id: 1
+                    request.user.id: 2
                 }
+
                 fp = UploadFiles(file=form.cleaned_data['file'], father_user=request.user.id, authorized_users=authorized_users_data)
                 fp.save()
             return HttpResponseRedirect(reverse("app:profile"))
@@ -69,11 +96,11 @@ def profile(request):
     for file in all_files:
         for key in file.authorized_users.keys():
             if str(request.user.id) == key:
-                if file.authorized_users[str(request.user.id)] == 1:
+                if file.authorized_users[str(request.user.id)] == 1 or file.authorized_users[str(request.user.id)] == 2:
                     this_user_files.append(file)
 
     context = {
-        'all_files': all_files,
+        # 'all_files': all_files,
         'form': form,
         'this_user_files' : this_user_files,
 
