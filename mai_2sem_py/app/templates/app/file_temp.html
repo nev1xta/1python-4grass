@@ -46,14 +46,36 @@
                   </div>
                  
                 <div>
-                  <h2>скачать файл</h2>
-                  <a href="{{ file.file.url }}" download="{{ file.file.url }}">{{ file.file.name }}</a>
+                  <!-- <h2>скачать файл</h2> -->
+                  <h2> <a href="{{ file.file.url }}" download="{{ file.file.url }}">скачать файл</a> </h2>
+                </div>
+                <div>
+                  
+                  <form action="" method="post" enctype="multipart/form-data" class="dropzone" name="form2">
+                    {% csrf_token %}
+                    {% if user.id == file.father_user %}
+                    <h2>изменить файл</h2>
+                    {{ form_replace_file.as_p }}
+                    <!-- <input name="file_upload" type="file" multiple></input> -->
+                    <button class="btn btn-warning text-white" type="submit" name="ReplaceFiles_button">Отправить файл</button>
+                    {% endif %}
+                  </form>
+
+                </br>
+                <form action="" method="post" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  {% if user.id == file.father_user %}
+                <div>
+                  <button class="btn btn-warning text-white" type="submit" name="DeleteFiles_button">Удалить файл</button>
+                </div>
+                {% endif %}
+              </form>
                 </div>
 
                 </div>
                 <div class="col-md-9 d-flex flex-column">
                   <h4 class="fw-bold">{{ file.file.name }}</h4>
-                  <form action="" method="post">
+                  <form action="" method="post" name="form_add_user">
                     {% csrf_token %}
                     <div>
                     <h4>Пользователи с доступом к файлу:</h4>
@@ -76,7 +98,7 @@
                       </div>  
                     </br>
                     <div name="role">
-                      {% for choice in form.role %}
+                      {% for choice in form_add_user.role %}
                       
                       <span class="radio">{{ choice.tag }}</span>
                       {{ choice.choice_label }}</br>

@@ -44,15 +44,16 @@ def profile_files(request, file_id):
     # print(users_with_file)
 
     if request.method == "POST":
-        form = NewPrivilegedUser(request.POST)
+        form_add_user = NewPrivilegedUser(request.POST)
+        form_replace_file = UploadFileForm(request.POST, request.FILES)
         if "addUserbutton" in request.POST:
-            if form.is_valid():
-                if not (form.cleaned_data["role"]):
+            if form_add_user.is_valid():
+                if not (form_add_user.cleaned_data["role"]):
                     messages.success(request, 'роль пользователя не выбрана')
                 elif not (User.objects.filter(username=request.POST["user"]).exists()):
                     messages.success(request, 'пользователь не существует')
                 else:
-                    cd = form.cleaned_data
+                    cd = form_add_user.cleaned_data
                     
                     users = User.objects.get(username=request.POST["user"])
                     file.authorized_users[int(users.id)] = int(cd["role"])
@@ -60,14 +61,24 @@ def profile_files(request, file_id):
         if "sign" in request.POST:
             file.authorized_users[int(request.user.id)] = 2
             file.save()
+        if "ReplaceFiles_button" in request.POST:
+            if form_replace_file.is_valid():
+                file.file =  form_replace_file.cleaned_data['file']
+                file.save()
         if "comeback" in request.POST:
             return HttpResponseRedirect(reverse("app:profile"))
+        if "DeleteFiles_button" in request.POST:
+            file.delete_file()
+            return HttpResponseRedirect(reverse("app:profile"))
+
+
     else:
-        form = NewPrivilegedUser()
+        form_add_user = NewPrivilegedUser()
 
     contex = {
         "file" : file,
-        "form" : form,
+        "form_add_user" : form_add_user,
+        "form_replace_file" : form_replace_file,
         "users" : users_with_file,
         "non_signatories" : non_signatories,
     }
