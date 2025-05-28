@@ -109,7 +109,7 @@
                 {% endif %}
                 {% for user_iter in non_signatories %}
                   {% if user_iter.id == user.id %}
-                  <button name="sign" type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2" >подписать</button>
+                  <button name="sign" type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2" onclick="location.reload();">подписать</button>
                   {% endif %}
                 {% endfor %}
                 </form>

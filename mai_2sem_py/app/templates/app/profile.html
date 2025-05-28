@@ -38,8 +38,14 @@
                   <img src="images/avatar.png" alt="Аватар" class="rounded-circle img-fluid mb-3 profile-avatar">
                   <h4 class="fw-bold">{{ user.username }}</h4>
                 </div>
-
                 <div class="col-md-9 d-flex flex-column">
+
+
+
+
+
+
+
                   <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0">Ваши файлы</h5>
                     <form action="{% url 'logout' %}?next=/profile" method="post">
@@ -47,10 +53,29 @@
                     <button class="btn btn-warning text-white">Выйти</button>
                   </form>
                   </div>
+                  
+                  <form method="post" novalidate>
+                    {% csrf_token %}
+                  <div> 
+                    <div class="form-group">
+                      {{ form1.age_group.label_tag }}
+                      {{ form1.age_group }}
+                      {% if form1.age_group.errors %}
+                          <div class="invalid-feedback d-block">
+                              {% for error in form1.age_group.errors %}
+                                  {{ error }}
+                              {% endfor %}
+                              
+                          </div>
+                      {% endif %}
+                      <button type="submit" class="btn btn-primary" name="filther">Сортировать</button>
+                  </div>
+                  </div>
+                </form>
 
                   <div class="file-list">
                     <ul class="list-group">
-                      
+                      {% if this_user_files %}
                         {% for file in this_user_files %}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                           {{ file.file.name }} 
@@ -62,6 +87,9 @@
                           </form>
                         </li>
                         {% endfor %}
+                        {% else %}
+                        <h>Таких файлов нет</h>
+                      {% endif %}
                     </ul>
                   </div>
 

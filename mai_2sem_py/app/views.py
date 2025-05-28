@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic.edit import CreateView, FormView
@@ -12,7 +12,9 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, FileResponse
 import os
 from django.contrib import messages
-
+from .forms import SurveyForm
+from .sorts import sings, non_sings, names, full_sings, uploadFiles, by_date
+import datetime
 
 # from .forms import NewUserForm
 from django.contrib.auth.decorators import login_required
@@ -39,7 +41,7 @@ def profile_files(request, file_id):
 
     non_signatories = []
     for user in users_with_file:
-        if file.authorized_users[str(user.id)] == 1:
+        if file.authorized_users[str(user.id)] == 2:
             non_signatories.append(user)
     # print(users_with_file)
 
@@ -56,14 +58,20 @@ def profile_files(request, file_id):
                     cd = form_add_user.cleaned_data
                     
                     users = User.objects.get(username=request.POST["user"])
-                    file.authorized_users[int(users.id)] = int(cd["role"])
+                    file.authorized_users[str(users.id)] = int(cd["role"])
+                    file.last_changes_date = datetime.datetime.now()
                     file.save()
         if "sign" in request.POST:
-            file.authorized_users[int(request.user.id)] = 2
+            file.authorized_users[str(request.user.id)] = 3
+            file.last_changes_date = datetime.datetime.now()
             file.save()
         if "ReplaceFiles_button" in request.POST:
             if form_replace_file.is_valid():
                 file.file =  form_replace_file.cleaned_data['file']
+                for i in file.authorized_users:
+                    if file.authorized_users[i] == 3:
+                        file.authorized_users[i] = 2
+                file.last_changes_date = datetime.datetime.now()
                 file.save()
         if "comeback" in request.POST:
             return HttpResponseRedirect(reverse("app:profile"))
@@ -89,30 +97,56 @@ def profile_files(request, file_id):
 def profile(request):
     all_files = UploadFiles.objects.all()
 
-
-    if request.method == "POST":
-        form = UploadFileForm(request.POST, request.FILES)
-        if "UploadFiles_button" in request.POST:
-            if form.is_valid():
-                authorized_users_data = {
-                    request.user.id: 2
-                }
-
-                fp = UploadFiles(file=form.cleaned_data['file'], father_user=request.user.id, authorized_users=authorized_users_data)
-                fp.save()
-            return HttpResponseRedirect(reverse("app:profile"))
-    else:
-        form = UploadFileForm()
     this_user_files = []
     for file in all_files:
         for key in file.authorized_users.keys():
             if str(request.user.id) == key:
-                if file.authorized_users[str(request.user.id)] == 1 or file.authorized_users[str(request.user.id)] == 2:
+                statuses = [1, 2, 3]
+                if file.authorized_users[str(request.user.id)] in statuses:
                     this_user_files.append(file)
+
+    if request.method == "POST":
+        form = UploadFileForm(request.POST, request.FILES)
+
+        
+        form1 = SurveyForm(request.POST)
+        if "filther" in request.POST:
+            if form1.is_valid():
+                age_group = form1.cleaned_data['age_group']
+                print(age_group)
+                if age_group == "Подписанные":
+                    this_user_files = sings(this_user_files, request.user.id)
+                elif age_group == "Не подписанны":
+                    this_user_files = non_sings(this_user_files, request.user.id)
+                elif age_group == "По имени":
+                    this_user_files = names(this_user_files, request.user.id)
+                elif age_group == "Завершён":
+                    this_user_files = full_sings(this_user_files, request.user.id)
+                elif age_group == "Загруженные":
+                    this_user_files = uploadFiles(this_user_files, request.user.id)
+                elif age_group == "Дата":
+                    this_user_files = by_date(this_user_files, request.user.id)
+                    
+
+
+        if "UploadFiles_button" in request.POST:
+            if form.is_valid():
+                if form.cleaned_data['file']:
+                    authorized_users_data = {
+                        request.user.id: 1
+                    }
+                    fp = UploadFiles(file=form.cleaned_data['file'], father_user=request.user.id, authorized_users=authorized_users_data, last_changes_date=datetime.datetime.now())
+                    fp.save()
+                    
+                    return HttpResponseRedirect(reverse("app:profile"))
+    else:
+        form1 = SurveyForm()
+        form = UploadFileForm()
 
     context = {
         # 'all_files': all_files,
         'form': form,
+        'form1': form1,
         'this_user_files' : this_user_files,
 
     }
