@@ -10,6 +10,7 @@ urlpatterns = [
     path('register/', views.register.as_view(), name='register'),
     path('profile/', views.profile, name="profile"),
     path('profile/<int:file_id>/', views.profile_files),
+    path('profile/notifications', views.notifications)
     # path('download/<str:filename>/', views.download_file, name='download_file'),
     # path('profile/<int:fileid>/', views.files_viewer, name="detail_file"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

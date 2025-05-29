@@ -69,3 +69,6 @@ class SurveyForm(forms.Form):
         
         if dynamic_choices:
             self.fields['age_group'].choices = dynamic_choices
+
+# class delete_notification(forms.Form):
+#     delete = forms.

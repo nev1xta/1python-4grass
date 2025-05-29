@@ -1,0 +1,72 @@
+{% load static %}
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{file.file.name}}</title>
+  <link rel="shortcut icon" type="image/png" href="../../static/images/avatar.png" />
+  <link rel="stylesheet" href="{% static 'app/styles.css' %}" />
+  <link rel="stylesheet" href="{% static 'app/file.css' %}" />
+  <style>
+    .profile-avatar {
+      max-width: 180px;
+      border: 3px solid #013c58;
+    }
+
+    .file-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .card-long {
+      min-height: 800px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6"
+    data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed">
+
+    <div class="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-10 col-lg-11">
+            <div class="card p-5 card-long" id="box-form">
+              <div class="row h-100">
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+
+                    <h5 class="fw-bold mb-0">Уведомления</h5>
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        <button name="comeback" type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2" >назад</button>
+                    </form>
+
+              </div> 
+              
+              <div class="file-list">
+                <ul class="list-group">
+                  {% if notifications_to_this_user %}
+                    {% for notification in notifications_to_this_user %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      <h3> {{ notification.text }} </h3>
+                      <form method="post" action="">
+                      {% csrf_token %}
+                      <button class="btn btn-warning text-white" value="{{ notification.id }}"  name="delete_notification" type="submit">Удалить</button>
+                      </form>
+                    </li>
+                    {% endfor %}
+                    {% else %}
+                    <h>Нет Уведомлений</h>
+                  {% endif %}
+                </ul>
+              </div>
+            </div> 
+          </div> 
+        </div> 
+      </div>
+    </div>
+  </div>
+</body>
+</html>

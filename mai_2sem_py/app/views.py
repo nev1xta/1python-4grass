@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic.edit import CreateView, FormView
 from django.contrib.auth.forms import UserCreationForm
-from .models import UploadFiles
+from .models import UploadFiles, UpdateNotifications
 from django.conf import settings
 from django.db import models
 from .forms import RegisterForm, UploadFileForm, NewPrivilegedUser
@@ -61,21 +61,33 @@ def profile_files(request, file_id):
                     file.authorized_users[str(users.id)] = int(cd["role"])
                     file.last_changes_date = datetime.datetime.now()
                     file.save()
+                    if int(cd["role"]) == 1:
+                        notification = UpdateNotifications(recipient=users.id, text=f"Вы получили доступ к просмотру нового файла: {file.file.name}")
+                    elif int(cd["role"]) == 2:
+                        notification = UpdateNotifications(recipient=int(users.id), text=f"Вы получили доступ к подписанию нового файла: {file.file.name}")
+                    notification.save()
         if "sign" in request.POST:
             file.authorized_users[str(request.user.id)] = 3
             file.last_changes_date = datetime.datetime.now()
             file.save()
+            notification = UpdateNotifications(recipient=int(file.father_user), text=f"{ User.objects.get(id=request.user.id).username} подписал файл: {file.file.name}")
+            notification.save()
         if "ReplaceFiles_button" in request.POST:
             if form_replace_file.is_valid():
                 file.file =  form_replace_file.cleaned_data['file']
                 for i in file.authorized_users:
                     if file.authorized_users[i] == 3:
                         file.authorized_users[i] = 2
+                    notification = UpdateNotifications(recipient=int(i), text=f"{ User.objects.get(id=request.user.id).username} изменил файл: {file.file.name}")
+                    notification.save()
                 file.last_changes_date = datetime.datetime.now()
                 file.save()
         if "comeback" in request.POST:
             return HttpResponseRedirect(reverse("app:profile"))
         if "DeleteFiles_button" in request.POST:
+            for i in file.authorized_users:
+                notification = UpdateNotifications(recipient=int(i), text=f"{ User.objects.get(id=request.user.id).username} удалил файл: {file.file.name}")
+                notification.save()
             file.delete_file()
             return HttpResponseRedirect(reverse("app:profile"))
 
@@ -92,6 +104,20 @@ def profile_files(request, file_id):
     }
     return render(request, "app/file_temp.html", context=contex)
 
+def notifications(request):
+    notifications_to_this_user = UpdateNotifications.objects.filter(recipient=request.user.id)
+
+    if request.method == "POST":
+        if "comeback" in request.POST:
+            return HttpResponseRedirect(reverse("app:profile"))
+        if "delete_notification" in request.POST:
+            
+            UpdateNotifications.objects.filter(id=int(request.POST["delete_notification"])).delete()
+    contex = {
+        "notifications_to_this_user" : notifications_to_this_user,
+    }
+
+    return render(request, "app/notifications.html", context=contex)
 
 @login_required
 def profile(request):
@@ -127,7 +153,7 @@ def profile(request):
                 elif age_group == "Дата":
                     this_user_files = by_date(this_user_files, request.user.id)
                     
-
+        # if 
 
         if "UploadFiles_button" in request.POST:
             if form.is_valid():

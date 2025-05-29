@@ -14,5 +14,6 @@ class UploadFiles(models.Model):
 
         storage.delete(path)
 
-
-
+class UpdateNotifications(models.Model):
+    recipient = models.IntegerField()
+    text = models.TextField()

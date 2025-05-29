@@ -22,6 +22,15 @@
     .card-long {
       min-height: 800px;
     }
+    .image-button {
+
+      background: url('../../static/images/notification.png') no-repeat center / contain; 
+      padding: 10px;
+  border: none;
+  height: 30px;
+  width: 30px;
+  cursor: pointer;
+  }
   </style>
 </head>
 <body>
@@ -35,7 +44,6 @@
             <div class="card p-5 card-long" id="box-form">
               <div class="row h-100">
                 <div class="col-md-3 text-center border-end d-flex flex-column align-items-center justify-content-center">
-                  <img src="images/avatar.png" alt="Аватар" class="rounded-circle img-fluid mb-3 profile-avatar">
                   <h4 class="fw-bold">{{ user.username }}</h4>
                 </div>
                 <div class="col-md-9 d-flex flex-column">
@@ -45,9 +53,15 @@
 
 
 
-
+                  
                   <div class="d-flex justify-content-between align-items-center mb-3">
+
                     <h5 class="fw-bold mb-0">Ваши файлы</h5>
+                    <form action="./notifications" method="post">
+                      {% csrf_token %}
+                    <button name="to_notifications" type="submit" class="image-button"></button>
+                  </form>
+
                     <form action="{% url 'logout' %}?next=/profile" method="post">
                       {% csrf_token %}
                     <button class="btn btn-warning text-white">Выйти</button>
@@ -68,7 +82,7 @@
                               
                           </div>
                       {% endif %}
-                      <button type="submit" class="btn btn-primary" name="filther">Сортировать</button>
+                      <button type="submit" class="btn btn-primary" name="filther">Отфильтровать</button>
                   </div>
                   </div>
                 </form>
@@ -82,7 +96,7 @@
                           <form action="{{file.id}}/" method="post">
                             <h>{{ file.authorized_users }}</h>
                           {% csrf_token %}
-                          <button name="addUser_button" class="badge bg-primary rounded-pill">Подробнее</button>
+                          <button class="badge bg-primary rounded-pill">Подробнее</button>
 
                           </form>
                         </li>
