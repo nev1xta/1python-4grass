@@ -5,17 +5,18 @@ from django import forms
 
 
 class RegisterForm(UserCreationForm):
-
+    # password1 = forms.CharField(label="", widget=forms.PasswordInput(attrs={'type': "password", 'class':"form-control", 'id':"InputPassword1", 'name':"password1", 'placeholder':"Введите пароль"}))
+    # password2 = forms.CharField(label="", widget=forms.PasswordInput(attrs={'type': "password", 'class':"form-control", 'id':"InputPassword2", 'name':"password2", 'placeholder':"Повторите пароль"}))
     def __init__(self, *args, **kwargs):
         super(UserCreationForm, self).__init__(*args, **kwargs)
-        # self.fields.pop('password1')
-        # self.fields.pop('password2')
 
     class Meta(UserCreationForm.Meta):
         fields = UserCreationForm.Meta.fields + ("email", )
+        print(fields)
         widgets = {
             "email": forms.HiddenInput(),
             "username": forms.HiddenInput(),
+
         }
         
 

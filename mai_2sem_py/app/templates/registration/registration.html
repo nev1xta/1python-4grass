@@ -1,5 +1,5 @@
 {% load static %}
-{{ form }}
+
 <!doctype html>
 <html lang="ru">
 
@@ -28,6 +28,7 @@
                 </div>
                 <form method="post">
                   {% csrf_token %}
+                  
                   <div class="mb-4">
                     <label for="InputUsername1" class="form-label">Имя пользователя</label>
                     <input type="text" class="form-control" id="InputUsername1" aria-describedby="emailHelp" name="username" placeholder="Введите ваше имя пользователя">
@@ -39,9 +40,11 @@
                   <div class="mb-4">
                     <label for="InputPassword1" class="form-label">Пароль</label>
                     <input type="password" class="form-control" id="InputPassword1" name="password1" placeholder="Введите пароль">
+
                     </div>
                   <div class="mb-4">
                     <input type="password" class="form-control" id="InputRepeatPassword1" name="password2" placeholder="Повторите пароль">
+
                   </div>
                  
                   <button  type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2" >Регистрация</button>
