@@ -114,7 +114,7 @@ def notifications(request):
             
             UpdateNotifications.objects.filter(id=int(request.POST["delete_notification"])).delete()
     contex = {
-        "notifications_to_this_user" : notifications_to_this_user,
+        "notifications_to_this_user" : notifications_to_this_user[::-1],
     }
 
     return render(request, "app/notifications.html", context=contex)

@@ -8,34 +8,69 @@
   <link rel="shortcut icon" type="image/png" href="../../static/images/avatar.png" />
   <link rel="stylesheet" href="{% static 'app/styles.css' %}" />
   <link rel="stylesheet" href="{% static 'app/file.css' %}" />
+  <link rel="stylesheet" href="{% static 'app/header.css' %}" />
+  <link rel="stylesheet" href="{% static 'app/sidebar.css' %}" />
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <style>
-    .profile-avatar {
-      max-width: 180px;
-      border: 3px solid #013c58;
-    }
-
     .file-list {
       max-height: 400px;
       overflow-y: auto;
     }
 
-    .card-long {
-      min-height: 800px;
+    .bottom{
+      position: relative;
+      bottom: 10px;
+      width: calc(100% - 30px);
     }
-    .image-button {
-
-      background: url('../../static/images/notification.png') no-repeat center / contain; 
-      padding: 10px;
-  border: none;
-  height: 30px;
-  width: 30px;
-  cursor: pointer;
-  }
+    .btn-primary {
+      background-color: var(--primary-color);
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--border-radius);
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-2px);
+      box-shadow: var(--box-shadow);
+    }
   </style>
 </head>
 <body>
-  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6"
-    data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed">
+ <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+    <!-- Sidebar Begin -->
+    <div class="sidebar sidebar-content" id="sidebar">
+      <div class="toggle-btn" style="background-color: #013c58;" onclick="toggleSidebar()">
+        <i class="bi bi-list"></i> 
+      </div>
+
+      <div class="sidebar-item active">
+        <i class="bi bi-person-fill"></i>
+        <span>Профиль</span>
+      </div>
+
+      <div class="sidebar-item">
+        <form action="./notifications" method="post">
+          {% csrf_token %} 
+          <button name="to_notifications" type="submit" class="btn image-button">
+            <i class="bi bi-bell-fill"></i> Уведомления
+          </button>
+        </form>     
+      </div>
+
+      <div class="sidebar-item">
+        <form action="{% url 'logout' %}?next=/profile" method="post">
+          {% csrf_token %}
+          <button class="btn image-button">
+            <i class="bi bi-box-arrow-right"></i> Выйти
+          </button>
+        </form>
+      </div>
+    </div>
+    <!-- Sidebar End -->
 
     <div class="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
       <div class="container">
@@ -43,82 +78,86 @@
           <div class="col-lg-10 col-lg-11">
             <div class="card p-5 card-long" id="box-form">
               <div class="row h-100">
-                <div class="col-md-3 text-center border-end d-flex flex-column align-items-center justify-content-center">
-                  <h4 class="fw-bold">{{ user.username }}</h4>
-                </div>
-                <div class="col-md-9 d-flex flex-column">
-
-
-
-
-
-
+                <!-- Left Column -->
+                <div class="col-md-3 border-end d-flex flex-column align-items-center">
+                  <img src="{% static 'images/logo0.png' %}" class="logo-img mb-4" width="150" height="150" alt="PaperClipped Logo">
                   
-                  <div class="d-flex justify-content-between align-items-center mb-3">
-
-                    <h5 class="fw-bold mb-0">Ваши файлы</h5>
-                    <form action="./notifications" method="post">
-                      {% csrf_token %}
-                    <button name="to_notifications" type="submit" class="image-button"></button>
-                  </form>
-
-                    <form action="{% url 'logout' %}?next=/profile" method="post">
-                      {% csrf_token %}
-                    <button class="btn btn-warning text-white">Выйти</button>
-                  </form>
-                  </div>
-                  
-                  <form method="post" novalidate>
+                  <form method="post" novalidate class="w-100">
                     {% csrf_token %}
-                  <div> 
                     <div class="form-group">
                       {{ form1.age_group.label_tag }}
                       {{ form1.age_group }}
                       {% if form1.age_group.errors %}
-                          <div class="invalid-feedback d-block">
-                              {% for error in form1.age_group.errors %}
-                                  {{ error }}
-                              {% endfor %}
-                              
-                          </div>
+                        <div class="invalid-feedback d-block">
+                          {% for error in form1.age_group.errors %}
+                            {{ error }}
+                          {% endfor %}
+                        </div>
                       {% endif %}
-                      <button type="submit" class="btn btn-primary" name="filther">Отфильтровать</button>
+                      <button type="submit" class="btn btn-primary w-100 py-2 mt-3 rounded-2" name="filther">
+                        <i class="bi bi-funnel-fill"></i> Отфильтровать
+                      </button>
+                    </div>
+                  </form>
+                </div>
+                
+                <!-- Right Column -->
+                <div class="col-md-9 d-flex flex-column">
+                  <!-- Header Section -->
+                  <div class="d-flex flex-column mb-4">
+                    <div class="header">
+                      <h4 class="fw-bold mb-0" style="color: #fff;">Добро пожаловать в PaperClipped, {{ user.username }}!</h4>
+                      <p class="mb-0">Здесь вы можете управлять своими файлами</p>
+                    </div>
+                    <h5 class="fw-bold mt-4 mb-3">
+                      <i class="bi bi-files"></i> Ваши файлы
+                    </h5>  
                   </div>
-                  </div>
-                </form>
-
-                  <div class="file-list">
-                    <ul class="list-group">
-                      {% if this_user_files %}
+                  
+                  <!-- Files List -->
+                  <div class="file-list table flex-grow-1">
+                    {% if this_user_files %}
+                      <ul class="list-group">
                         {% for file in this_user_files %}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                          {{ file.file.name }} 
+                          <div class="d-flex align-items-center">
+                            <i class="bi bi-file-earmark-text me-3" style="font-size: 1.5rem;"></i>
+                            <div>
+                              <h6 class="mb-0">{{ file.file.name }}</h6>
+                              <!-- <small class="text-muted">Доступ: {{ file.authorized_users }}</small> -->
+                            </div>
+                          </div>
                           <form action="{{file.id}}/" method="post">
-                            <h>{{ file.authorized_users }}</h>
-                          {% csrf_token %}
-                          <button class="badge bg-primary rounded-pill">Подробнее</button>
-
+                            {% csrf_token %}
+                            <button class="btn btn-sm btn-primary rounded-pill">
+                              <i class="bi bi-three-dots"></i> Подробнее
+                            </button>
                           </form>
                         </li>
                         {% endfor %}
-                        {% else %}
-                        <h>Таких файлов нет</h>
-                      {% endif %}
-                    </ul>
+                      </ul>
+                    {% else %}
+                      <div class="text-center py-5">
+                        <i class="bi bi-folder-x" style="font-size: 3rem; color: #ccc;"></i>
+                          <h>У вас пока нет доступных файлов</h>
+                      </div>
+                    {% endif %}
                   </div>
 
-
-                  <div class="col-md-9 d-flex flex-column">
+                  <!-- Upload Section -->
+                  <div class="col-md-12 flex-column bottom">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                      <form action="" method="post" enctype="multipart/form-data" class="dropzone">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <!-- <input name="file_upload" type="file" multiple></input> -->
-                        <button class="btn btn-warning text-white" type="submit" name="UploadFiles_button">Отправить файл</button>
+                      <form action="" method="post" enctype="multipart/form-data" class="dropzone w-100">
+                        <div class="mb-3">
+                          {% csrf_token %}
+                          {{ form.as_p }}
+                        </div>
+                        <button class="btn btn-warning text-white" type="submit" name="UploadFiles_button">
+                          <i class="bi bi-cloud-arrow-up-fill"></i> Отправить файл
+                        </button>
                       </form>
-
+                    </div>
                   </div>
-
                 </div>
               </div> 
             </div> 
@@ -127,5 +166,6 @@
       </div>
     </div>
   </div>
+   <script src="{% static 'app/sidebar.js' %}"></script>
 </body>
 </html>

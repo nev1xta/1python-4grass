@@ -8,49 +8,77 @@
   <link rel="shortcut icon" type="image/png" href="../../static/images/avatar.png" />
   <link rel="stylesheet" href="{% static 'app/styles.css' %}" />
   <link rel="stylesheet" href="{% static 'app/file.css' %}" />
+  <link rel="stylesheet" href="{% static 'app/header.css' %}" />
+  <link rel="stylesheet" href="{% static 'app/sidebar.css' %}" />
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+ 
   <style>
     .profile-avatar {
       max-width: 180px;
       border: 3px solid #013c58;
     }
-
-    .file-list {
-      max-height: 400px;
-      overflow-y: auto;
-    }
-
-    .card-long {
-      min-height: 800px;
-    }
+ 
   </style>
+
 </head>
 <body>
   <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6"
     data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed">
+   <!-- Sidebar Begin -->
+    <div class="sidebar sidebar-content" id="sidebar">
+      <div class="toggle-btn" style="background-color: #013c58;" onclick="toggleSidebar()">
+        <i class="bi bi-list"></i> 
+      </div>
 
+      <div class="sidebar-item">
+        <form method="post" action="">
+          {% csrf_token %}
+          <button name="comeback" type="submit" class="btn image-button">
+            <i class="bi bi-person-fill"></i> Профиль
+          </button>
+        </form>
+      </div>
+
+      <div class="sidebar-item active">
+          <i class="bi bi-bell-fill"></i> 
+          <span>Уведомления</span>
+
+      </div>
+
+      <div class="sidebar-item">
+        <form action="{% url 'logout' %}?next=/profile" method="post">
+          {% csrf_token %}
+          <button class="btn image-button">
+            <i class="bi bi-box-arrow-right"></i> Выйти
+          </button>
+        </form>
+      </div>
+    </div>
+    <!-- Sidebar End -->
     <div class="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-lg-10 col-lg-11">
             <div class="card p-5 card-long" id="box-form">
+
               <div class="row h-100">
 
                 <div class="d-flex justify-content-between align-items-center mb-3">
-
-                    <h5 class="fw-bold mb-0">Уведомления</h5>
+                   <h3 class="fw-bold mb-0">
+                      <i class="bi bi-bell-fill"></i> Уведомления
+                    </h3>
                     <form method="post" action="">
                         {% csrf_token %}
-                        <button name="comeback" type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2" >назад</button>
+                        <button name="comeback" type="submit" class="btn w-150 py-8 fs-4 mb-4 rounded-2" style="background-color: #013c58;color: #fff;" ><i class="bi bi-arrow-left"></i>назад</button>
                     </form>
-
-              </div> 
+                </div> 
               
               <div class="file-list">
                 <ul class="list-group">
                   {% if notifications_to_this_user %}
                     {% for notification in notifications_to_this_user %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                      <h3> {{ notification.text }} </h3>
+                      <h6 style="padding: 5px;"> {{ notification.text }} </h6>
                       <form method="post" action="">
                       {% csrf_token %}
                       <button class="btn btn-warning text-white" value="{{ notification.id }}"  name="delete_notification" type="submit">Удалить</button>
@@ -68,5 +96,6 @@
       </div>
     </div>
   </div>
+   <script src="{% static 'app/sidebar.js' %}"></script>
 </body>
 </html>
